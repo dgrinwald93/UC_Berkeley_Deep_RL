@@ -1,2 +1,0 @@
-model_checkpoint_path: "/home/dg/Projects/training/ml/RL/uc_berkeley/homework_fall2019/hw1/cs285/scripts/../data/dagger_test_dagger_half_cheetah_HalfCheetah-v2_11-12-2019_15-40-12/policy_itr_9"
-all_model_checkpoint_paths: "/home/dg/Projects/training/ml/RL/uc_berkeley/homework_fall2019/hw1/cs285/scripts/../data/dagger_test_dagger_half_cheetah_HalfCheetah-v2_11-12-2019_15-40-12/policy_itr_9"

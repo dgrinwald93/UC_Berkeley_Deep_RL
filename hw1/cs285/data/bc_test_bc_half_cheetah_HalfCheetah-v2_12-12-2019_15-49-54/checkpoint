@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/grinwald/Projects/UC_Berkeley_Deep_RL/hw1/cs285/scripts/../data/bc_test_bc_half_cheetah_HalfCheetah-v2_12-12-2019_15-49-54/policy_itr_0"
+all_model_checkpoint_paths: "/home/grinwald/Projects/UC_Berkeley_Deep_RL/hw1/cs285/scripts/../data/bc_test_bc_half_cheetah_HalfCheetah-v2_12-12-2019_15-49-54/policy_itr_0"

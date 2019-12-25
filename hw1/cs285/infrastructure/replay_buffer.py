@@ -3,6 +3,8 @@ import numpy as np
 import tensorflow as tf
 import gym
 import os
+import sys
+
 
 from cs285.infrastructure.utils import *
 
@@ -68,10 +70,9 @@ class ReplayBuffer(object):
         ## HINT 2: return corresponding data points from each array (i.e., not different indices from each array)
         ## HINT 3: look at the sample_recent_data function below
 
-        indices = np.random.permutation(batch_size)
-        ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.sample_recent_data(batch_size)
-
-        return ob_batch[indices], ac_batch[indices], re_batch[indices], next_ob_batch[indices], terminal_batch[indices]
+        mask = np.random.permutation(self.obs.shape[0])
+        return self.obs[mask < batch_size], self.acs[mask < batch_size], self.rews[mask < batch_size], self.next_obs[
+             mask < batch_size], self.terminals[mask < batch_size]
 
     def sample_recent_data(self, batch_size=1):
         return self.obs[-batch_size:], self.acs[-batch_size:], self.rews[-batch_size:], self.next_obs[-batch_size:], self.terminals[-batch_size:]

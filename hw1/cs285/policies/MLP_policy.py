@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import tensorflow as tf
 from .base_policy import BasePolicy
 from cs285.infrastructure.tf_utils import build_mlp
@@ -88,9 +89,8 @@ class MLPPolicy(BasePolicy):
         # HINT2: the tensor we're interested in evaluating is self.sample_ac
         # HINT3: in order to run self.sample_ac, it will need observation fed into the feed_dict
 
-        action = self.sess.run(self.sample_ac, feed_dict={self.observations_pl:
-                                                          observation})
-
+        action = self.sess.run([self.sample_ac], feed_dict={self.observations_pl:
+                                                          observation})[0]
         return action
 
     # update/train this policy

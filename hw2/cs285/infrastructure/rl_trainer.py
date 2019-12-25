@@ -1,5 +1,5 @@
 import time
-
+import sys
 from collections import OrderedDict
 import pickle
 import numpy as np
@@ -47,6 +47,7 @@ class RL_Trainer(object):
 
         # Is this env continuous, or self.discrete?
         discrete = isinstance(self.env.action_space, gym.spaces.Discrete)
+
         self.params['agent_params']['discrete'] = discrete
 
         # Observation and action sizes
@@ -110,6 +111,7 @@ class RL_Trainer(object):
             training_returns = self.collect_training_trajectories(itr,
                                 initial_expertdata, collect_policy,
                                 self.params['batch_size'])
+
             paths, envsteps_this_batch, train_video_paths = training_returns
             self.total_envsteps += envsteps_this_batch
 
@@ -140,13 +142,47 @@ class RL_Trainer(object):
     ####################################
 
     def collect_training_trajectories(self, itr, load_initial_expertdata, collect_policy, batch_size):
-        # TODO: GETTHIS from HW1
+
+        # HINT1: use sample_trajectories from utils
+        # HINT2: you want each of these collected rollouts to be of length self.params['ep_len']
+        print("\nCollecting data to be used for training...")
+        paths, envsteps_this_batch = sample_trajectories(self.env, collect_policy, batch_size, self.params['ep_len'])
+
+        # collect more rollouts with the same policy, to be saved as videos in tensorboard
+        # note: here, we collect MAX_NVIDEO rollouts, each of length MAX_VIDEO_LEN
+        train_video_paths = None
+        if self.log_video:
+            print('\nCollecting train rollouts to be used for saving videos...')
+            ##
+            train_video_paths = sample_n_trajectories(self.env, collect_policy, MAX_NVIDEO, MAX_VIDEO_LEN, True)
+
+        return paths, envsteps_this_batch, train_video_paths
 
     def train_agent(self):
-        # TODO: GETTHIS from HW1
+        print('\nTraining agent using sampled data from replay buffer...')
+        for train_step in range(self.params['num_agent_train_steps_per_iter']):
+
+            # HINT1: use the agent's sample function
+            # HINT2: how much data = self.params['train_batch_size']
+            ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.agent.sample(
+                self.params['train_batch_size'])
+
+
+            # HINT: use the agent's train function
+            # HINT: print or plot the loss for debugging!
+            self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch,
+                             terminal_batch)
 
     def do_relabel_with_expert(self, expert_policy, paths):
-        # TODO: GETTHIS from HW1 (although you don't actually need it for this homework)
+        print("\nRelabelling collected observations with labels from an expert policy...")
+
+        # HINT: query the policy (using the get_action function) with paths[i]["observation"]
+        # and replace paths[i]["action"] with these expert labels
+        for i in range(len(paths)):
+            acs = expert_policy.get_action(paths[i]['observation'])
+            paths[i]['action'] = acs
+
+        return paths
 
     ####################################
     ####################################

@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/dg/Projects/training/UC_Berkeley_Deep_RL/hw1/cs285/scripts/../data/dagger_test_dg_humanoid_Humanoid-v2_24-12-2019_16-17-32/policy_itr_19"
+all_model_checkpoint_paths: "/home/dg/Projects/training/UC_Berkeley_Deep_RL/hw1/cs285/scripts/../data/dagger_test_dg_humanoid_Humanoid-v2_24-12-2019_16-17-32/policy_itr_19"

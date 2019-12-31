@@ -104,7 +104,7 @@ class PGAgent(BaseAgent):
 
             # TODO: Estimate the Q value Q^{pi}(s_t, a_t) as the reward-to-go
             # HINT1: value of each point (t) = total discounted reward summed over the remainder of that trajectory (from t to T-1)
-                # In other words, q(s_t, a_t) = sum_{t'=t}^{T-1} gamma^(t'-t) * r_{t'}
+            # In other words, q(s_t, a_t) = sum_{t'=t}^{T-1} gamma^(t'-t) * r_{t'}
             # Hint3: see the helper functions at the bottom of this file
             q_values = np.concatenate([self._discounted_cumsum(r) for r in rews_list])
 
@@ -116,7 +116,6 @@ class PGAgent(BaseAgent):
             Computes advantages by (possibly) subtracting a baseline from the estimated Q values
         """
 
-        # TODO: Estimate the advantage when nn_baseline is True
         # HINT1: pass obs into the neural network that you're using to learn the baseline
             # extra hint if you're stuck: see your actor's run_baseline_prediction
         # HINT2: advantage should be [Q-b]

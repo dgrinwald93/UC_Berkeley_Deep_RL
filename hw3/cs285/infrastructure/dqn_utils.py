@@ -463,7 +463,7 @@ class MemoryOptimizedReplayBuffer(object):
         return ret
 
     def store_effect(self, idx, action, reward, done):
-        """Store effects of action taken after obeserving frame stored
+        """Store effects of action taken after observing frame stored
         at index idx. The reason `store_frame` and `store_effect` is broken
         up into two functions is so that once can call `encode_recent_observation`
         in between.

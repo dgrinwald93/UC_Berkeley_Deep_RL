@@ -1,6 +1,7 @@
 from .base_critic import BaseCritic
 import tensorflow as tf
 from cs285.infrastructure.dqn_utils import minimize_and_clip, huber_loss
+import sys
 
 class DQNCritic(BaseCritic):
 
@@ -29,6 +30,7 @@ class DQNCritic(BaseCritic):
         #####################
 
         # q values, created with the placeholder that holds CURRENT obs (i.e., t)
+        # predicted q-values for the taken actions
         self.q_t_values = q_func(self.obs_t_ph, self.ac_dim, scope='q_func', reuse=False)
         self.q_t = tf.reduce_sum(self.q_t_values * tf.one_hot(self.act_t_ph, self.ac_dim), axis=1)
 
@@ -42,13 +44,17 @@ class DQNCritic(BaseCritic):
             # In double Q-learning, the best action is selected using the Q-network that
             # is being updated, but the Q-value for this action is obtained from the
             # target Q-network. See page 5 of https://arxiv.org/pdf/1509.06461.pdf for more details.
-            TODO
+            q_tp1 = tf.reduce_sum(q_tp1_values * tf.one_hot(
+                tf.argmax(q_func(self.obs_tp1_ph, self.ac_dim, scope='q_func', reuse=True), axis=1),
+                self.ac_dim), axis=1)
+
         else:
             # q values of the next timestep
             q_tp1 = tf.reduce_max(q_tp1_values, axis=1)
 
         #####################
 
+        # TODO calculate the targets for the Bellman error
         # HINT1: as you saw in lecture, this would be:
             #currentReward + self.gamma * qValuesOfNextTimestep * (1 - self.done_mask_ph)
         # HINT2: see above, where q_tp1 is defined as the q values of the next timestep
@@ -58,17 +64,20 @@ class DQNCritic(BaseCritic):
 
         #####################
 
+        # TODO compute the Bellman error (i.e. TD error between q_t and target_q_t)
         # Note that this scalar-valued tensor later gets passed into the optimizer, to be minimized
         # HINT: use reduce mean of huber_loss (from infrastructure/dqn_utils.py) instead of squared error
-        self.total_error= tf.reduce_mean(huber_loss(target_q_t - self.q_t))
+        self.total_error= tf.reduce_mean(huber_loss(self.q_t, target_q_t))
 
         #####################
 
+        # TODO these variables should all of the 
         # variables of the Q-function network and target network, respectively
         # HINT1: see the "scope" under which the variables were constructed in the lines at the top of this function
         # HINT2: use tf.get_collection to look for all variables under a certain scope
-        q_func_vars = tf.trainable_variables(scope='q_func')
-        target_q_func_vars = tf.trainable_variables(scope='target_q_func')
+
+        q_func_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='q_func')
+        target_q_func_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='target_q_func')
 
         #####################
 

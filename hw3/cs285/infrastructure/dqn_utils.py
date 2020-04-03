@@ -1,6 +1,7 @@
 """This file includes a collection of utility functions that are useful for
 implementing DQN."""
 import random
+import sys
 from collections import namedtuple
 
 import gym
@@ -463,7 +464,7 @@ class MemoryOptimizedReplayBuffer(object):
         return ret
 
     def store_effect(self, idx, action, reward, done):
-        """Store effects of action taken after observing frame stored
+        """Store effects of action taken after obeserving frame stored
         at index idx. The reason `store_frame` and `store_effect` is broken
         up into two functions is so that once can call `encode_recent_observation`
         in between.
@@ -479,6 +480,7 @@ class MemoryOptimizedReplayBuffer(object):
         done: bool
             True if episode was finished after performing that action.
         """
+
         self.action[idx] = action
         self.reward[idx] = reward
         self.done[idx]   = done

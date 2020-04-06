@@ -10,6 +10,7 @@ from cs285.infrastructure.replay_buffer import ReplayBuffer
 from cs285.infrastructure.utils import *
 
 class ACAgent(BaseAgent):
+
     def __init__(self, sess, env, agent_params):
         super(ACAgent, self).__init__()
 
@@ -40,8 +41,12 @@ class ACAgent(BaseAgent):
             # 3) estimate the Q value as Q(s, a) = r(s, a) + gamma*V(s')
             # HINT: Remember to cut off the V(s') term (ie set it to 0) at terminal states (ie terminal_n=1)
             # 4) calculate advantage (adv_n) as A(s, a) = Q(s, a) - V(s)
-        
-        adv_n = TODO
+
+        v_s = self.critic.forward(ob_no)
+        v_s_next = self.critic.forward(next_ob_no)
+        q_v = re_n + self.gamma * v_s_next * (1 - terminal_n)
+
+        adv_n = q_v - v_s
 
         if self.standardize_advantages:
             adv_n = (adv_n - np.mean(adv_n)) / (np.std(adv_n) + 1e-8)
@@ -50,6 +55,7 @@ class ACAgent(BaseAgent):
     def train(self, ob_no, ac_na, re_n, next_ob_no, terminal_n):
         
         # TODO Implement the following pseudocode:
+
             # for agent_params['num_critic_updates_per_agent_update'] steps,
             #     update the critic
 
@@ -58,11 +64,18 @@ class ACAgent(BaseAgent):
             # for agent_params['num_actor_updates_per_agent_update'] steps,
             #     update the actor
         
-        TODO
+        for i in range(self.agent_params['num_critic_updates_per_agent_update']):
+            c_ls = self.critic.update(ob_no, next_ob_no, re_n, terminal_n)
+
+        adv = self.estimate_advantage(ob_no, next_ob_no, re_n, terminal_n)
+
+        for i in range(self.agent_params['num_actor_updates_per_agent_update']):
+            a_ls = self.actor.update(ob_no, ac_na, adv)
 
         loss = OrderedDict()
-        loss['Critic_Loss'] = TODO  # put final critic loss here
-        loss['Actor_Loss'] = TODO  # put final actor loss here
+        loss['Critic_Loss'] = c_ls  # put final critic loss here
+        loss['Actor_Loss'] = a_ls  # put final actor loss here
+
         return loss
 
     def add_to_replay_buffer(self, paths):

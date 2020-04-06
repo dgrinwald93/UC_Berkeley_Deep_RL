@@ -24,8 +24,8 @@ class RL_Trainer(object):
 
     def __init__(self, params):
 
-        #############
-        ## INIT
+        ############
+        ##  INIT  ##
         #############
 
         # Get params, create logger, create TF session
@@ -172,13 +172,13 @@ class RL_Trainer(object):
 
         # HINT1: use sample_trajectories from utils
         # HINT2: you want each of these collected rollouts to be of length self.params['ep_len']
-        print("\nCollecting data to be used for training...")
+        #print("\nCollecting data to be used for training...")
         paths, envsteps_this_batch = sample_trajectories(self.env, collect_policy, batch_size, self.params['ep_len'])
 
         # collect more rollouts with the same policy, to be saved as videos in tensorboard
         # note: here, we collect MAX_NVIDEO rollouts, each of length MAX_VIDEO_LEN
         train_video_paths = None
-        if self.log_video:
+        if self.logvideo:
             print('\nCollecting train rollouts to be used for saving videos...')
             ##
             train_video_paths = sample_n_trajectories(self.env, collect_policy, MAX_NVIDEO, MAX_VIDEO_LEN, True)
@@ -197,8 +197,10 @@ class RL_Trainer(object):
 
             # HINT: use the agent's train function
             # HINT: print or plot the loss for debugging!
-            self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch,
-                             terminal_batch)
+            loss = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch,
+                                    terminal_batch)
+
+            return loss
 
     def do_relabel_with_expert(self, expert_policy, paths):
         print("\nRelabelling collected observations with labels from an expert policy...")
@@ -250,7 +252,7 @@ class RL_Trainer(object):
     def perform_logging(self, itr, paths, eval_policy, train_video_paths, loss):
 
         # collect eval trajectories, for logging
-        print("\nCollecting data for eval...")
+        #print("\nCollecting data for eval...")
         eval_paths, eval_envsteps_this_batch = sample_trajectories(self.env, eval_policy, self.params['eval_batch_size'], self.params['ep_len'])
 
         # save eval rollouts as videos in tensorboard event file
@@ -303,7 +305,10 @@ class RL_Trainer(object):
             # perform the logging
             for key, value in logs.items():
                 print('{} : {}'.format(key, value))
-                self.logger.log_scalar(value, key, itr)
+                try:
+                    self.logger.log_scalar(value, key, itr)
+                except:
+                    pass
             print('Done logging...\n\n')
 
             self.logger.flush()
